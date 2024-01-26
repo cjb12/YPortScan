@@ -78,5 +78,22 @@ func isValidPort(port string) ([]int, error) {
 		return ports, nil
 	}
 
+		commaSeparatedRe := regexp.MustCompile(`^(\d+)(,\s*\d+)*$`)
+		commaSeparatedMatch := commaSeparatedRe.FindStringSubmatch(port)
+		if len(commaSeparatedMatch) > 0 {
+			var ports []int
+			for _, portStr := range strings.Split(port, ",") {
+				portNum, err := strconv.Atoi(strings.TrimSpace(portStr))
+				if err != nil {
+					return nil, err
+				}
+				if portNum < 1 || portNum > 65535 {
+					return nil, errors.New("Invalid port number")
+				}
+				ports = append(ports, portNum)
+			}
+			return ports, nil
+		}
+
 	return nil, errors.New("Invalid port format")
 }
